@@ -1,0 +1,17 @@
+# Assembled into the Meshly-Open-Source org profile's repository table.
+# Format and rules: PROJECT-BLURB-STANDARD.md in the private meshly-support repo.
+#
+# Edit this in the same pull request as the change that makes it true. The
+# profile table is generated from this file and is never edited by hand.
+name: google-cloud-github-runner
+
+what: >-
+  Meshly's enhanced fork of [Cyclenerd/google-cloud-github-runner](https://github.com/Cyclenerd/google-cloud-github-runner),
+  used by Meshly's github.com tenant for remote runners on GCP. Ephemeral
+  just-in-time self-hosted runners, plus self-hosting notes.
+
+audience: >-
+  Users of github.com with CI workflows who want to save money on GitHub
+  runners, as a drop-in replacement.
+
+order: 10
