@@ -133,6 +133,37 @@ service, a support commitment, or a claim that it will suit your cost profile.
 If GitHub-hosted runners are affordable for you, use them. They are less work
 than any of this.
 
+## Public repositories
+
+GitHub's advice is to use self-hosted runners only with private repositories.
+Anyone can open a pull request against a public repo, and a workflow triggered
+by that pull request runs the contributor's code on your runner.
+
+Ephemeral just-in-time runners are the mitigation GitHub names for this, and
+they are what upstream builds. They solve persistence: a fresh VM per job means
+nothing survives into the next job. They do not help with the job itself.
+During that one job the submitted code has shell access on a VM in your GCP
+project, with whatever its service account and network reach allow.
+
+If you want self-hosted runners on a public repository anyway:
+
+- Trigger them only on events a fork cannot cause — `push` to a branch in your
+  own repository, tags, `workflow_dispatch`, `schedule`. Not `pull_request`
+  from forks.
+- Never `pull_request_target` where secrets are in scope. That combination runs
+  your workflow definition against their code with your token.
+- Turn on *Require approval for all external contributors* under
+  Settings → Actions.
+- Give the runner's service account only what the build needs. No
+  project-wide roles, no ambient credentials on the image.
+- Keep organisation and repository secrets out of reach of the job.
+
+This repository is public, so its own CI runs on GitHub-hosted runners.
+`.github/workflows/ci.yml` is `ubuntu-latest` in all four jobs. The one
+workflow that targets a self-hosted label, upstream's `example.yml`, is
+`workflow_dispatch` only, which a fork pull request cannot trigger. The
+self-hosted path is for private repositories.
+
 ## How soft is this fork, honestly
 
 "Soft fork" is a gradient, not a badge, and this one has drifted along it. Where
