@@ -2,50 +2,53 @@
 
 Thanks for looking. Two things to know before you spend any effort.
 
-## 1. Go upstream first 🍴
+## 1. Consider upstream first 🍴
 
-This repository is a fork. The project is
-**[Cyclenerd/google-cloud-github-runner](https://github.com/Cyclenerd/google-cloud-github-runner)**,
-and that is where contributions belong.
+This repository is a hard fork. We maintain this line of the code, and a change
+to any part of it can land here, including `app/`, `gcp/` and `tools/`.
 
-If you have a bug, a feature request, or a patch for the runner manager
-itself, open it upstream:
+That said, upstream is
+**[Cyclenerd/google-cloud-github-runner](https://github.com/Cyclenerd/google-cloud-github-runner)**
+and it is active. If your change is a fix or an improvement to the runner
+manager that would apply there unchanged, sending it upstream reaches everyone
+running the tool rather than only the people on this fork. That is worth more
+than getting it merged here faster.
+
+Upstream, if you want it:
 
 * **Issues** → <https://github.com/Cyclenerd/google-cloud-github-runner/issues>
 * **Pull requests** → <https://github.com/Cyclenerd/google-cloud-github-runner/pulls>
 * **Coding style** → upstream's
   [CONTRIBUTING.md](https://github.com/Cyclenerd/google-cloud-github-runner/blob/master/CONTRIBUTING.md)
-  is the authority. For anything under `app/`, `gcp/` or `tools/`, follow it,
-  not this file.
+  is the authority for code style under `app/`, `gcp/` and `tools/`. We have
+  not rewritten those conventions and do not intend to.
 
-This is not a brush-off. A fix landed upstream reaches everyone running this
-tool, including us. A fix landed here reaches us and strands you on a fork.
-Upstream is also active — there is real work in flight there at any given
-time, some of it fixing things we ourselves reported — so an issue opened
-upstream has a decent chance of already being someone's problem.
+An issue opened upstream also has a decent chance of already being someone's
+problem there — including things we reported ourselves.
 
-**We will not merge a change here that should have gone upstream.** If you send
-us one, we will say so and point you there, which wastes a round trip for both
-of us. The one case where sending it here is right: the change is to a
-directory this fork adds (see below), and so has nowhere upstream to go yet.
+**We will not refuse a change for being upstream's.** We may say that upstream
+is the better home for it and ask whether you want to send it there too. If
+you would rather it just landed here, that is a fine answer.
 
-## 2. If it really does belong here 📥
+## 2. What lands here 📥
 
-Changes to **the paths this fork adds** are welcome here, because they have
-nowhere upstream to go yet. Everything else is upstream's.
+Anything in this repository. We do keep a working preference for **adding** a
+path over editing one upstream owns, because it keeps pulling upstream changes
+cheap, but it is a preference rather than a rule, and a change that needs to
+edit `app/` can.
 
-`README.md` has the current list — it changes as the fork grows, so it is kept
-in one place rather than restated here. At the time of writing it is a
-documentation directory and one self-contained package, and more is planned.
+`README.md` lists what this fork adds and measures how far it has diverged.
+That count is kept in one place rather than restated here.
 
 **Issues are enabled on this fork**, for the fork's own paths:
 <https://github.com/Meshly-Open-Source/google-cloud-github-runner/issues>. Prefix the title
 with the path it concerns (`docs:`, and so on) so it is obvious at a glance
 that it is not an upstream bug filed in the wrong place.
 
-An issue about the runner manager itself will be closed with a pointer
-upstream. That is not unfriendliness — leaving it open here would mean it looks
-tracked while nobody who can fix it is reading it.
+An issue about the runner manager itself is welcome here, and we will usually
+point at upstream as well, because upstream is where a fix reaches everyone.
+What we will not do is leave it open here looking tracked while nobody who can
+fix it is reading it — so expect either work or a straight answer.
 
 ### How we evaluate a contribution
 

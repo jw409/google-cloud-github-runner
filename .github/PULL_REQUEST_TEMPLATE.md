@@ -1,18 +1,17 @@
 <!-- Adapted from Josee9988/project-template (MIT) — see .github/ATTRIBUTION.md -->
 
-## ⚠️ Is this change in the right repository?
+## Would this be better upstream?
 
-**This repository is a [soft fork](../README.md#how-soft-is-this-fork-honestly).**
-Only the paths listed in [`README.md`](../README.md) are ours. Everything else —
-`app/`, `gcp/`, `tools/`, `tests/`, the `Dockerfile`, `requirements.txt`,
-`.github/workflows/` — belongs to
-[upstream](https://github.com/Cyclenerd/google-cloud-github-runner), and a PR
-touching those **will be closed with a pointer there**, because a fix landed
-upstream reaches everyone running this tool and a fix landed here strands you on
-a fork.
+This is a hard fork, so a change to any part of it can land here, including
+`app/`, `gcp/` and `tools/`. Nothing gets closed for being in the wrong place.
 
-If you are not sure, open it upstream. Being redirected costs one round trip;
-maintaining a divergence costs forever.
+Worth a thought first: if the change is a fix to the runner manager that would
+apply to
+[upstream](https://github.com/Cyclenerd/google-cloud-github-runner) unchanged,
+sending it there reaches everyone running the tool. You are welcome to do both.
+
+[How far this fork diverges](../README.md#how-far-this-diverges) if you want
+the current measurement.
 
 ---
 

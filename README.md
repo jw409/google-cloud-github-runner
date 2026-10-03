@@ -4,14 +4,18 @@
 [![Badge: Python](https://img.shields.io/badge/Python-3670A0?logo=python&logoColor=ffdd54)](#readme)
 [![Badge: Google Cloud](https://img.shields.io/badge/Google%20Cloud-%234285F4.svg?logo=google-cloud&logoColor=white)](#readme)
 
-A **soft fork** of **[Cyclenerd/google-cloud-github-runner](https://github.com/Cyclenerd/google-cloud-github-runner)** —
+A **hard fork** of **[Cyclenerd/google-cloud-github-runner](https://github.com/Cyclenerd/google-cloud-github-runner)** —
 ephemeral, just-in-time self-hosted GitHub Actions runners on Google Cloud.
 
-*Soft fork* is the accurate term and it carries the working model: we **track**
-upstream rather than diverge from it, we **add** directories rather than modify
-upstream's code, an upstream bump is meant to be a **fast-forward**, and our
-additions are written to be **given back**. We are explicitly not taking
-ownership of our own line of the application.
+Hard fork means we maintain this line of the code. Upstream is where it came
+from and we send work back where it fits, but nothing here is waiting on
+upstream's permission and a change to `app/` is allowed.
+
+In practice we still **add** paths rather than edit upstream's, because it
+keeps pulling upstream changes cheap. That is a preference we measure
+([how far it diverges](#how-far-this-diverges)), not a promise about what the
+running artefact is — see
+[what byte-identity does NOT mean](#what-byte-identity-does-not-mean).
 
 **Read upstream's documentation, not this file.** Everything about what the
 tool is, how to deploy it, how to configure it, its architecture, its
@@ -33,7 +37,7 @@ adds, and the fork-facing documentation including this README. Treat it accordin
   mechanically, not asserted — see
   [the invariant](#the-additions-never-edits-invariant).
 * **Agents: read [`AGENTS-LOCAL.md`](AGENTS-LOCAL.md) before editing anything
-  here.** It is repo-wide and states the read-only boundary, how to route a
+  here.** It is repo-wide and states which paths are ours, how to route a
   change, and what must never be included in an upstream pull request.
 * **Review it before you trust it.** Some of it is access-control code, which
   is exactly the category where plausible-looking wrong code is most expensive:
@@ -55,9 +59,9 @@ than have you infer it from the commit style.
 
 ## What's different from upstream
 
-No upstream **code** is changed. Two directories are added, two root files are
+No upstream **code** is changed. Five directories are added, six root files are
 added, and four documentation files are diverged — see
-[how soft this fork is](#how-soft-is-this-fork-honestly) for the honest
+[how far it diverges](#how-far-this-diverges) for the honest
 accounting.
 
 | | Change | Path |
@@ -93,10 +97,9 @@ Byte-identity is a claim about **source files**. It is not a claim about the
 | Docs a reader sees | upstream's | ours, for four files |
 | Community health files | upstream's | ours, minus `FUNDING.yml` |
 
-So: a **soft fork at the source layer, a derivative product at the artefact
-layer.** We are fundamentally augmenting this package. Pretending otherwise
-because no vendor byte moved would be a true statement arranged to create a
-false impression.
+So the source layer tracks upstream and the artefact layer does not. We are
+fundamentally augmenting this package. Pretending otherwise because no vendor
+byte moved would be a true statement arranged to create a false impression.
 
 What the invariant actually buys is therefore narrower than it sounds, and it
 is a **maintainability** property rather than a fidelity one:
@@ -152,8 +155,10 @@ If you want self-hosted runners on a public repository anyway:
   from forks.
 - Never `pull_request_target` where secrets are in scope. That combination runs
   your workflow definition against their code with your token.
-- Turn on *Require approval for all external contributors* under
-  Settings → Actions.
+- Under Settings → Actions → General, set the fork pull request policy to
+  *Require approval for all outside collaborators*. A workflow from an
+  untrusted pull request then waits for a maintainer instead of running. Both
+  public repositories in this organisation are set this way.
 - Give the runner's service account only what the build needs. No
   project-wide roles, no ambient credentials on the image.
 - Keep organisation and repository secrets out of reach of the job.
@@ -164,61 +169,52 @@ workflow that targets a self-hosted label, upstream's `example.yml`, is
 `workflow_dispatch` only, which a fork pull request cannot trigger. The
 self-hosted path is for private repositories.
 
-## How soft is this fork, honestly
+## How far this diverges
 
-"Soft fork" is a gradient, not a badge, and this one has drifted along it. Where
-it actually sits today:
+"Hard fork" says who maintains it, not how much changed. The amount:
 
 | | Count | What |
 |---|---|---|
 | Upstream **code** paths modified | **0** | `app/` `gcp/` `tools/` `tests/` `Dockerfile` `requirements*.txt` `.github/` — byte-identical, mechanically verified |
 | Upstream **doc** paths diverged | **4** | `README.md` `CONTRIBUTING.md` `SECURITY.md` `AGENTS.md` — each pinned by blob hash |
-| Directories added | **2** | `ipfilter/` `docs/` |
-| Root files added | **2** | `AGENTS-LOCAL.md` `RUNNER.xml` |
+| Directories added | **5** | `ipfilter/` `docs/` `scripts/` `.claude/` `.meshly/` |
+| Root files added | **6** | `AGENTS-LOCAL.md` `CHANGELOG.md` `CLAUDE.md` `NOTICE` `RUNNER.xml` `justfile` |
 
-So: **soft on code, medium on documentation.** Four diverged doc files is more
-than "a fork notice", and pretending otherwise would be the kind of claim that
-gets believed and then relied on. The thing that keeps it soft is that the
-divergence is confined to files that cannot change program behaviour — and that
-this is enforced structurally, not by good intentions: only top-level `.md`
-blobs can be declared, so no amount of editing the baseline can add `app/` or
-`requirements.txt` to that list.
+So the code side is currently untouched, and the check that reports this is
+mechanical: git object ids compared against a recorded baseline of upstream's
+tree, with the four documentation exceptions pinned by blob hash.
 
-**What would make it a hard fork** — stated so we notice if it happens:
-
-1. Any modification to an upstream **code** path. The mechanism makes this
-   impossible to do quietly; it would be a deliberate choice.
-2. Carrying a **patch series** against upstream, or a merge of upstream changes
-   we rewrote. A bump stops being a fast-forward.
-3. Our additions acquiring **dependencies** upstream does not have.
-4. Any addition becoming **load-bearing for the application** rather than
-   something a deployment composes in.
-5. Offering nothing upstream. A soft fork that never sends anything back is
-   just a slow hard fork.
-
-If you are reading this because one of those happened, the README is the thing
-that should have been updated first.
+Read that as a **measurement, not a guarantee**. A change that needs to edit
+`app/` can; the check will say so, which is the point of having it. What it
+buys is that the divergence is always a number somebody chose rather than one
+that accumulated.
 
 ## Why the fork exists
 
-We needed somewhere to put code upstream does not have yet, without editing
-upstream's code to do it.
+We needed somewhere to put code upstream does not have yet, and we needed to
+own the release cadence of the thing our CI depends on.
 
-The reason for the constraint is selfish: it keeps a version bump a
-fast-forward instead of a merge of code we did not write. What it specifically
-buys is protection from a patch that applies **with fuzz** — which succeeds,
-and now means something different, and nothing fails and nobody looks.
+The reason we still avoid editing upstream's paths is selfish: it keeps a
+version bump a fast-forward instead of a merge of code we did not write. What
+it specifically buys is protection from a patch that applies **with fuzz** —
+which succeeds, and now means something different, and nothing fails and nobody
+looks.
 
 It also means you can audit this fork's **source** without reading a diff:
 upstream's files are byte-identical, and everything of ours is in a new path.
 Auditing its **behaviour** is a different exercise and needs the table
 [above](#what-byte-identity-does-not-mean) — the artefact is not upstream's.
 
-### The additions-never-edits invariant
+### The additions-never-edits preference
 
 > Every path upstream owns is byte-identical here, **except** an explicitly
 > baselined set of top-level `.md` files, each pinned by its exact blob hash.
 > Everything this fork adds is a new top-level path.
+
+That is true today and the check reports it. It is a preference we hold because
+it keeps bumps cheap, not a constraint the fork is required to satisfy — this
+is a hard fork, and editing an upstream path is a decision we are allowed to
+make. Making it means re-baselining, deliberately, in the same change.
 
 Checked by comparing git object ids against a recorded baseline of upstream's
 tree, which is a Merkle comparison — `app` matching means every file beneath

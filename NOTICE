@@ -1,0 +1,23 @@
+google-cloud-github-runner — meshly.ai fork
+Copyright 2026 Meshly.AI
+
+This product includes software developed by
+Nils Knieling and contributors (https://github.com/Cyclenerd/google-cloud-github-runner),
+licensed under the Apache License, Version 2.0.
+
+This is a modified version. Changes made by Meshly.AI:
+
+  - Added ipfilter/, a framework-agnostic IP allowlist policy core with WSGI
+    and ASGI adapters. Not imported or enabled by the application; a
+    deployment composes it in.
+  - Added docs/, notes on Artifact Registry and Cloud Build caching.
+  - Added AGENTS-LOCAL.md and RUNNER.xml, instructions for coding agents.
+  - Replaced README.md, CONTRIBUTING.md, SECURITY.md and AGENTS.md. Each is
+    pinned by blob hash against a recorded baseline of upstream's tree so the
+    set of replaced files cannot grow unnoticed.
+  - Replaced the community health files under .github/, and removed
+    FUNDING.yml.
+  - Changed the deployed entrypoint from run:app to a module of ours.
+
+No file under app/, gcp/, tools/, tests/, the Dockerfile or requirements.txt
+is modified as of this writing. README.md records the current measurement.

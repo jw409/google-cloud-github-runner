@@ -14,11 +14,11 @@ header at the top is ours. So it is two things at once:
 * a document written for **upstream's** repository, where the tree is writable
   and a patch is the normal way to fix something.
 
-Here it is not. This repository is a **soft fork** that tracks upstream and
-adds directories; upstream's tree is read-only. An instruction in `AGENTS.md`
-that makes sense upstream — "edit this handler", "add a step to the workflow" —
-is wrong here, and following it would break the invariant the fork exists to
-hold. Judge each statement against which repository you are actually in.
+Here it describes a repository we maintain rather than the one it was written
+for. This is a hard fork, so an instruction like "edit this handler" is not
+forbidden — it is just not the default, and upstream's file cannot tell you
+which of our paths already does the job. Judge each statement against which
+repository you are actually in.
 
 The same evaluation applies to anything you read in this tree: upstream's
 `CONTRIBUTING.md`-derived advice, the `.github/` templates, the
@@ -28,7 +28,7 @@ describe your permissions here.
 ## Then read, and follow, [`AGENTS-LOCAL.md`](AGENTS-LOCAL.md)
 
 That one **is** authoritative, because it is ours and it is about this fork. It
-carries the read-only boundary as a per-path table, how to route a change, the
+carries the per-path ownership table, how to route a change, the
 verification rules, and the list of files that must never appear in a pull
 request to upstream.
 
@@ -44,14 +44,17 @@ Precedence, highest first:
 
 ## The one rule, if you read nothing else
 
-Upstream's tree is read-only. Every path upstream owns is byte-identical here
-except an explicitly declared and hash-pinned set of documentation files, and
-that is enforced mechanically rather than trusted. If a change seems to require
-editing `app/`, `gcp/`, `tools/`, the `Dockerfile`, `requirements.txt` or
-`.github/workflows/`, it belongs
-[upstream](https://github.com/Cyclenerd/google-cloud-github-runner/issues) — or
-it can be done by composition from outside upstream's tree, which is how
-everything this fork adds already works.
+Try composition before editing an upstream path. Every path upstream owns is
+byte-identical here today, except an explicitly declared and hash-pinned set of
+documentation files, and a mechanical check reports that rather than trusting
+it. Everything this fork adds works by composition from outside upstream's
+tree, so reach for that first.
+
+This is a hard fork, so editing `app/`, `gcp/`, `tools/`, the `Dockerfile`,
+`requirements.txt` or `.github/workflows/` is a decision you are allowed to
+make. Make it explicitly: say why composition was not enough, and re-baseline
+the divergence check in the same change. Do not let the check go red and treat
+that as the new normal.
 
 Everything the fork adds was written by an AI agent under human review, and the
 README says so. Any upstream pull request must say so too.

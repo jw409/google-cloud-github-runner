@@ -32,8 +32,8 @@ Not a list of files; a list of behaviour changes in what runs.
 | `README` / `CONTRIBUTING` / `SECURITY` / `AGENTS` | upstream's | ours |
 | Community health files | upstream's | ours; issue templates replaced, `FUNDING.yml` **removed** |
 
-So: a **soft fork at the source layer, a derivative product at the artefact
-layer.** No file upstream owns is edited except four documentation files, each
+So the source layer tracks upstream and the artefact layer does not.
+No file upstream owns is edited except four documentation files, each
 pinned by hash — but the thing we deploy is not upstream's application with a
 different name on the box.
 
@@ -81,9 +81,8 @@ Nothing tests the composed artefact. That gap is ours, not theirs.
 
 - **`CLAUDE.md`, `AGENTS-LOCAL.md`, `RUNNER.xml`** — agent instructions. The
   entry point says to *read and evaluate* upstream's `AGENTS.md` rather than
-  obey it: it is accurate about the application and was written for a
-  repository where the tree is writable, so following it here would break the
-  invariant this fork exists to hold.
+  obey it: it is accurate about the application, and it cannot know which of
+  this fork's own paths already does the job.
 
 - **`justfile`** — `check` / `test` / `lint` / `boundary` / `test-hooks`.
   `boundary` exits **2** when it cannot compare rather than printing clean.

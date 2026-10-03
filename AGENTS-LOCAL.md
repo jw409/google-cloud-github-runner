@@ -1,4 +1,4 @@
-# AGENTS-LOCAL.md — repo-wide agent instructions for this soft fork
+# AGENTS-LOCAL.md — repo-wide agent instructions for this fork
 
 **Scope: the entire repository, every directory, every file.** Not just this
 directory. There are no nested `AGENTS-LOCAL.md` files and there should not be;
@@ -59,29 +59,31 @@ upstream's conventions. A user file may not relax any rule in
 
 ## What this repository is
 
-A **soft fork** of
+A **hard fork** of
 [Cyclenerd/google-cloud-github-runner](https://github.com/Cyclenerd/google-cloud-github-runner)
 — ephemeral just-in-time self-hosted GitHub Actions runners on Google Cloud —
 maintained by [meshly.ai](https://meshly.ai).
 
-"Soft fork" is the accurate term and it carries the whole working model:
+This is our line of the code. You are not forbidden from editing `app/`,
+`gcp/` or `tools/`.
 
-- We **track upstream**, we do not diverge from it. Upstream is the project.
-- We **add** directories. We do not modify upstream's code.
-- An upstream version bump is intended to be a **fast-forward**, never a merge
-  of code we did not write.
-- Our additions are written to be **given back**, not kept.
+How to work anyway:
 
-A hard fork would mean taking ownership of the application and maintaining our
-own line of it. We are explicitly not doing that, and most of the rules below
-exist to keep that true under time pressure.
+- **Prefer adding a path to editing one upstream owns.** It keeps a version
+  bump a fast-forward instead of a merge of code we did not write.
+- **If you do edit an upstream path, say so and re-baseline in the same
+  change.** The divergence check compares git object ids against a recorded
+  baseline; a surprise there should mean somebody slipped, not that the
+  baseline is stale.
+- **Send work upstream where it fits.** A fix that applies there unchanged
+  helps everyone running the tool. This is now optional rather than the plan.
 
-**It has drifted, and you should know by how much.** Zero upstream code paths
+**How far it has drifted, so you are not guessing.** Zero upstream code paths
 are modified; **four** upstream documentation files are diverged
 (`README.md`, `CONTRIBUTING.md`, `SECURITY.md`, `AGENTS.md`), each pinned by
-blob hash. That is soft on code and *medium* on documentation. If you add a
-fifth, update the count here and in `README.md` — a stale count is how
-"we barely touch upstream" survives past the point of being true.
+blob hash. If you change that, update the count here and in `README.md` — a
+stale count is how "we barely touch upstream" survives past the point of being
+true.
 
 **Where to file things.** Issues are enabled on this fork, for the fork's own
 paths:
@@ -101,15 +103,19 @@ with per-path permissions, the application's real route set and env vars, the
 composition surface, build traps, and what has and has not been verified. Read
 it before working in this repo. Human entry point: [`README.md`](README.md).
 
-## The boundary (the one rule)
+## The boundary
 
-> **Upstream's tree is read-only here.** Everything we add is a new top-level
-> path. The only exceptions are four top-level `.md` files, each explicitly
+> **Everything we add is a new top-level path.** Upstream's paths are
+> byte-identical today, except four top-level `.md` files, each explicitly
 > declared and pinned by blob hash.
+>
+> Editing an upstream path is allowed. It costs a deliberate re-baseline in the
+> same change, and that cost is the whole point: it makes the divergence a
+> number somebody chose.
 
 | Status | Paths |
 |---|---|
-| **READ-ONLY — send changes upstream** | `app/` `gcp/` `tools/` `tests/` `Dockerfile` `requirements*.txt` `pytest.ini` `.github/` `.gitignore` `.dockerignore` `.gcloudignore` `.editorconfig` `.env.example` `.devcontainer/` `img/` `LICENSE` `CLOUD_SHELL_TUTORIAL.md` `CODE_OF_CONDUCT.md` |
+| **UPSTREAM'S — prefer composition; re-baseline if you edit** | `app/` `gcp/` `tools/` `tests/` `Dockerfile` `requirements*.txt` `pytest.ini` `.github/` `.gitignore` `.dockerignore` `.gcloudignore` `.editorconfig` `.env.example` `.devcontainer/` `img/` `LICENSE` `CLOUD_SHELL_TUTORIAL.md` `CODE_OF_CONDUCT.md` |
 | **OURS — change freely** | every top-level path the fork adds. Today: `ipfilter/` `docs/` `scripts/` `.claude/` `justfile` `RUNNER.xml` `CLAUDE.md` `AGENTS-LOCAL.md` `.github/ATTRIBUTION.md`. Expect this to grow; `README.md` holds the canonical list. |
 | **DECLARED DIVERGENCE — pinned, re-baseline to change** | `README.md` `CONTRIBUTING.md` `SECURITY.md` `AGENTS.md`, and community health files under `.github/` — **never** `.github/workflows/` |
 
@@ -223,7 +229,7 @@ so fetch each by its own name. The pinned commit resolves on both.
 
 - `/runner/preempted` **does not exist** at the pinned commit. A Spot-preempted
   VM posting there gets a 404, silently. Check upstream's in-flight work before
-  building it here — duplicating upstream work is how a soft fork acquires a
+  building it here — duplicating upstream work is how a fork acquires a
   divergence it then has to maintain.
 - The `/webhook` HMAC check is an **inline call inside the handler**, not a
   decorator or `before_request`, so WSGI middleware runs *before* it. Correct

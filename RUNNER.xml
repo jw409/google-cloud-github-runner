@@ -4,15 +4,15 @@
   signed-by="claude-opus-5-5"
   repo="Meshly-Open-Source/google-cloud-github-runner"
   upstream="Cyclenerd/google-cloud-github-runner"
-  relationship="SOFT FORK - tracks upstream, adds directories, modifies no upstream code"
-  key-insight="The fork's value is the boundary, not the code. Additions never edits means a version bump is a fast-forward, not a merge of code we did not write.">
+  relationship="HARD FORK - meshly maintains this line of the code; adds directories by preference, modifies no upstream code today"
+  key-insight="Adding paths rather than editing upstream's keeps a version bump a fast-forward. That is a preference we measure, not a constraint the fork must satisfy.">
 
 <!--
   AGENT-ORIENTED MANIFEST for the meshly.ai fork of google-cloud-github-runner:
   ephemeral, just-in-time self-hosted GitHub Actions runners on Google Cloud.
 
-  THIS FILE IS ABOUT THE FORK. It tells an agent what is safe to touch here and
-  what must be sent upstream instead. It does NOT document the application —
+  THIS FILE IS ABOUT THE FORK. It tells an agent which paths are ours and what
+  editing an upstream path costs. It does NOT document the application —
   upstream does, and duplicating it is how a fork's docs rot:
 
     https://github.com/Cyclenerd/google-cloud-github-runner#readme
@@ -20,22 +20,24 @@
   Human entry point: README.md. Authoritative for the fork's own code:
   ipfilter/tests/, 149 tests.
 
-  THE ONE RULE: upstream's tree is read-only here. If your change belongs in
-  app/, gcp/, tools/, Dockerfile or requirements.txt, it belongs UPSTREAM. See
-  the contribution-routing section, and check it BEFORE writing code, not after.
+  THE DEFAULT: try composition before editing an upstream path. Everything the
+  fork adds works that way. Editing app/, gcp/, tools/, Dockerfile or
+  requirements.txt is ALLOWED - this is a hard fork - but it costs a deliberate
+  re-baseline of the divergence check, and the structural predicate cannot
+  declare a non-.md path, so read fork-invariants before you start.
 -->
 
 <index generated="2026-10-02" note="line numbers computed from this file, not estimated">
-  <section name="ai-generated-disclosure" line="44" what="Who wrote the fork's code. READ FIRST."/>
-  <section name="contribution-routing" line="70" what="Does your change go here or upstream? Decide BEFORE coding."/>
-  <section name="identity" line="111" what="What the project is, and what the fork is"/>
-  <section name="repo-map" line="190" what="Every top-level path, and whether you may touch it"/>
-  <section name="fork-invariants" line="225" what="Hard guarantees about the fork boundary"/>
-  <section name="application-facts" line="280" what="Routes, env vars, runtime shape - read from upstream's code"/>
-  <section name="additions" line="348" what="ipfilter/ and docs/ - the fork's own code"/>
-  <section name="build-and-deploy" line="422" what="Building your own image; the traps"/>
-  <section name="agent-empathy" line="481" what="What agents get wrong in this repo"/>
-  <section name="attestation" line="540" what="What was verified, and what was NOT"/>
+  <section name="ai-generated-disclosure" line="46" what="Who wrote the fork's code. READ FIRST."/>
+  <section name="contribution-routing" line="72" what="Does your change go here or upstream? Decide BEFORE coding."/>
+  <section name="identity" line="113" what="What the project is, and what the fork is"/>
+  <section name="repo-map" line="192" what="Every top-level path, and whether you may touch it"/>
+  <section name="fork-invariants" line="227" what="What the divergence check measures, and what editing an upstream path costs"/>
+  <section name="application-facts" line="295" what="Routes, env vars, runtime shape - read from upstream's code"/>
+  <section name="additions" line="363" what="ipfilter/ and docs/ - the fork's own code"/>
+  <section name="build-and-deploy" line="437" what="Building your own image; the traps"/>
+  <section name="agent-empathy" line="496" what="What agents get wrong in this repo"/>
+  <section name="attestation" line="555" what="What was verified, and what was NOT"/>
 </index>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -131,7 +133,7 @@
       run:app), a WSGI wrapper that runs BEFORE the application's own in-handler signature
       check, four diverged documentation files, and our own community health files. This
       package is fundamentally augmented.
-      What the invariant buys is MAINTAINABILITY, not fidelity: an upstream bump is a
+      What adding-rather-than-editing buys is MAINTAINABILITY, not fidelity: an upstream bump is a
       fast-forward of a pointer rather than a merge, the pointer diff shows what is being
       accepted before it is accepted, and no patch can apply with fuzz.
       What it does NOT buy: that the running service behaves as upstream's, that upstream's
@@ -155,8 +157,8 @@
         <trigger>Carrying a patch series, or a merge of upstream changes we rewrote.</trigger>
         <trigger>Our additions acquiring dependencies upstream does not have.</trigger>
         <trigger>Any addition becoming load-bearing for the application rather than composed in.</trigger>
-        <trigger>Offering nothing upstream. A soft fork that never sends anything back is a slow
-                 hard fork.</trigger>
+        <trigger>Offering nothing upstream. A fork that never sends anything back drifts without noticing.</trigger>
+
       </would-make-it-hard>
     </softness>
     <issue-tracker scope="the paths this fork ADDS; see repo-map for the current set" enabled="true">
@@ -223,14 +225,18 @@
      FORK INVARIANTS
      ═══════════════════════════════════════════════════════════════════════════ -->
 <fork-invariants>
-  <invariant id="additions-never-edits" severity="HARD_LIMIT">
-    Every path upstream owns is byte-identical here, EXCEPT an explicitly
+  <invariant id="additions-never-edits" severity="PREFERENCE_MEASURED">
+    Every path upstream owns is byte-identical here TODAY, EXCEPT an explicitly
     baselined set of top-level .md files, each pinned by its exact blob hash.
     Everything the fork adds is a new top-level path.
 
-    State the exception when you state the invariant. "Nothing differs" is a
-    stronger claim than what is enforced, and a pass read as the stronger claim
-    is worse than no check.
+    This is a hard fork, so that is a measured state and a working preference,
+    not a limit on what may be changed. Severity says PREFERENCE_MEASURED
+    because the check reports the number rather than forbidding the edit.
+
+    State the exception when you state it. "Nothing differs" is a stronger
+    claim than what is checked, and a pass read as the stronger claim is worse
+    than no check.
   </invariant>
 
   <invariant id="enforced-not-promised" severity="GUARANTEED">
@@ -245,9 +251,18 @@
     app/, requirements.txt, Dockerfile and .github/ can never become
     exceptions.
 
-    This is the restriction that actually protects the application. An
-    exclusion list would fail open on the next vendor path somebody wanted to
-    touch; a structural predicate plus per-path hash pinning does not.
+    An exclusion list would fail open on the next vendor path somebody wanted
+    to touch; a structural predicate plus per-path hash pinning does not.
+
+    CONSEQUENCE OF THE HARD FORK, UNRESOLVED: this predicate was designed when
+    never editing app/ was the rule. It is the one part of the guard that a
+    hard fork contradicts. Edit app/ and the check goes red with no way to
+    express the decision, because the edit cannot be declared. That leaves
+    three options and the choice has not been made: keep the predicate and
+    accept that editing app/ means removing the guard, widen it to declare any
+    path by hash (weaker, but still a chosen number), or demote the whole check
+    to a reported drift count that never fails. Do not quietly pick one by
+    deleting the guard mid-change.
   </invariant>
 
   <invariant id="re-editing-a-declared-file-still-fails" severity="GUARANTEED">
