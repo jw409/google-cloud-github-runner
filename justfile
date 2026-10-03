@@ -134,7 +134,7 @@ boundary:
         echo "$wf" | sed 's/^/    /'
     fi
     # Declared doc divergences, plus the paths the fork owns.
-    allowed='^(README\.md|CONTRIBUTING\.md|SECURITY\.md|AGENTS\.md|CLAUDE\.md|AGENTS-LOCAL\.md|RUNNER\.xml|justfile|ipfilter/|docs/|scripts/|\.claude/|\.github/(ATTRIBUTION\.md|ISSUE_TEMPLATE/|PULL_REQUEST_TEMPLATE\.md|FUNDING\.yml|workflows/meshly-)|CHANGELOG\.md)'
+    allowed='^(README\.md|CONTRIBUTING\.md|SECURITY\.md|AGENTS\.md|CLAUDE\.md|AGENTS-LOCAL\.md|RUNNER\.xml|justfile|ipfilter/|docs/|scripts/|\.claude/|\.meshly/|\.github/(ATTRIBUTION\.md|ISSUE_TEMPLATE/|PULL_REQUEST_TEMPLATE\.md|FUNDING\.yml|workflows/meshly-)|CHANGELOG\.md)'
     unexpected=$(echo "$changed" | { grep -Ev "$allowed" || true; })
     if [[ -n "$unexpected" ]]; then
         echo "boundary: FINDINGS — upstream paths changed that the fork does not own:" >&2
