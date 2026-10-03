@@ -134,7 +134,14 @@ boundary:
         echo "$wf" | sed 's/^/    /'
     fi
     # Declared doc divergences, plus the paths the fork owns.
-    allowed='^(README\.md|CONTRIBUTING\.md|SECURITY\.md|AGENTS\.md|CLAUDE\.md|AGENTS-LOCAL\.md|RUNNER\.xml|justfile|ipfilter/|docs/|scripts/|\.claude/|\.meshly/|\.github/(ATTRIBUTION\.md|ISSUE_TEMPLATE/|PULL_REQUEST_TEMPLATE\.md|FUNDING\.yml|workflows/meshly-)|CHANGELOG\.md)'
+    # Exact files are anchored with $; directories and prefixes are not. Without
+    # the anchor, NOTICE also permits NOTICE-evil and README.md also permits
+    # README.md.bak, which is a guard that cannot tell a declared file from a
+    # file whose name merely starts like one.
+    files='README\.md|CONTRIBUTING\.md|SECURITY\.md|AGENTS\.md|CLAUDE\.md|AGENTS-LOCAL\.md|RUNNER\.xml|CHANGELOG\.md|NOTICE|justfile'
+    dirs='ipfilter/|docs/|scripts/|\.claude/|\.meshly/'
+    gh='\.github/(ATTRIBUTION\.md|PULL_REQUEST_TEMPLATE\.md|FUNDING\.yml)$|\.github/(ISSUE_TEMPLATE/|workflows/meshly-)'
+    allowed="^(($files)\$|$dirs|$gh)"
     unexpected=$(echo "$changed" | { grep -Ev "$allowed" || true; })
     if [[ -n "$unexpected" ]]; then
         echo "boundary: FINDINGS — upstream paths changed that the fork does not own:" >&2
